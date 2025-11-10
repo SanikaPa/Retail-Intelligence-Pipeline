@@ -1,28 +1,39 @@
-name: Python CI
+name: CI/CD for Retail Data Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.12
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
 
-    - name: Run tests
-      run: |
-        pytest scripts/tests -q
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create sample CSV data
+        run: |
+          mkdir -p data/clean data/processed
+          echo "OrderID,Product,Quantity,Revenue,OrderDate" > data/clean/cleaned_sales_data.csv
+          echo "1,ProductA,10,100,2025-01-01" >> data/clean/cleaned_sales_data.csv
+
+      - name: Run transform script
+        run: python scripts/transform.py
+
+      - name: Run tests
+        run: pytest scripts/tests -q
