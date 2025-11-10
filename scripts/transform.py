@@ -1,10 +1,21 @@
 import pandas as pd
 import os
 
-# Load cleaned data
-clean_path = "../data/clean/cleaned_sales_data.csv"
-df = pd.read_csv(clean_path)
+# -------------------------------
+# Set base directory (repo root)
+# -------------------------------
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Input & output paths
+clean_path = os.path.join(BASE_DIR, 'data', 'clean', 'cleaned_sales_data.csv')
+processed_folder = os.path.join(BASE_DIR, 'data', 'processed')
+os.makedirs(processed_folder, exist_ok=True)
+processed_file_path = os.path.join(processed_folder, "transformed_sales_data.csv")
+
+# -------------------------------
+# Load cleaned data
+# -------------------------------
+df = pd.read_csv(clean_path)
 print("Initial shape:", df.shape)
 
 # -------------------------------
@@ -12,6 +23,7 @@ print("Initial shape:", df.shape)
 # -------------------------------
 if 'SALES' not in df.columns:
     df['SALES'] = df['QUANTITYORDERED'] * df['PRICEEACH']
+
 df['TOTALREVENUE'] = df['SALES']
 
 # -------------------------------
@@ -19,6 +31,7 @@ df['TOTALREVENUE'] = df['SALES']
 # -------------------------------
 df['ORDERDATE'] = pd.to_datetime(df['ORDERDATE'], errors='coerce')
 df = df[df['ORDERDATE'].notna()]  # remove invalid dates
+
 df['DAY'] = df['ORDERDATE'].dt.day
 df['MONTH'] = df['ORDERDATE'].dt.month
 df['YEAR'] = df['ORDERDATE'].dt.year
@@ -68,11 +81,7 @@ df = df.merge(order_freq, on='CUSTOMERNAME', how='left')
 # -------------------------------
 # Save transformed dataset
 # -------------------------------
-processed_folder = "../data/processed/"
-os.makedirs(processed_folder, exist_ok=True)
-processed_file_path = os.path.join(processed_folder, "transformed_sales_data.csv")
 df.to_csv(processed_file_path, index=False)
-
 print(f"Transformed data saved to: {processed_file_path}")
 print("Transformed data shape:", df.shape)
 print(df.head())
