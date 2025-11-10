@@ -1,0 +1,33 @@
+# Virtual environment
+venv/
+.env/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Data files
+data/raw/
+data/processed/
+*.csv
+*.xlsx
+
+# Power BI temporary or autosave files
+*.pbix.autosave
+
+# Logs and reports
+logs/
+*.log
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VSCode / IDE settings
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
