@@ -1,34 +1,28 @@
-name: Retail Pipeline CI
+name: Python CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.12'
+        python-version: 3.12
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Create processed folder
-      run: mkdir -p data/processed
-
-    - name: Run data transformation
-      run: python scripts/transform.py
-
     - name: Run tests
-      run: pytest scripts/tests -q
+      run: |
+        pytest scripts/tests -q
