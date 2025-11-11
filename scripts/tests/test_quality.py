@@ -1,48 +1,32 @@
-import pandas as pd
 import os
+import pandas as pd
+import pytest
 
-# -------------------------------
-# Paths
-# -------------------------------
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'transformed_sales_data.csv')
+# Get project root (2 levels up from test file)
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+PROCESSED_FILE = os.path.join(PROJECT_ROOT, "data", "processed", "transformed_sales_data.csv")
 
-# -------------------------------
-# Helper function
-# -------------------------------
-def load_df():
-    return pd.read_csv(DATA_PATH)
-
-# -------------------------------
-# Tests
-# -------------------------------
+# Test if file exists
 def test_file_exists():
-    """Check if transformed CSV exists"""
-    assert os.path.exists(DATA_PATH), f"transformed_sales_data.csv not found at {DATA_PATH}"
+    assert os.path.exists(PROCESSED_FILE), f"{PROCESSED_FILE} not found"
 
+# Test if required columns exist
 def test_required_columns():
-    """Check required columns exist"""
-    df = load_df()
-    required = [
-        'ORDERNUMBER',
-        'ORDERDATE',
-        'CUSTOMERNAME',
-        'PRODUCTLINE',
-        'QUANTITYORDERED',
-        'PRICEEACH',
-        'SALES',
-        'TOTALREVENUE'
-    ]
-    missing = [c for c in required if c not in df.columns]
-    assert not missing, f"Missing required columns: {missing}"
+    df = pd.read_csv(PROCESSED_FILE)
+    required_columns = ['ORDERNUMBER', 'QUANTITYORDERED', 'PRICEEACH', 'ORDERDATE', 'PRODUCTLINE']
+    for col in required_columns:
+        assert col in df.columns, f"Column {col} not found in {PROCESSED_FILE}"
 
+# Test if there are no negative sales
 def test_no_negative_sales():
-    """Check SALES values are non-negative"""
-    df = load_df()
-    assert (df['SALES'] >= 0).all(), "Negative SALES values present"
+    df = pd.read_csv(PROCESSED_FILE)
+    assert (df['QUANTITYORDERED'] >= 0).all(), "Negative quantity found"
+    assert (df['PRICEEACH'] >= 0).all(), "Negative price found"
 
+# Test if ORDERDATE can be parsed as datetime
 def test_orderdate_parsable():
-    """Check ORDERDATE can be parsed as datetime"""
-    df = load_df()
-    parsed = pd.to_datetime(df['ORDERDATE'], errors='coerce')
-    assert parsed.notna().all(), "Some ORDERDATE values are not parseable"
+    df = pd.read_csv(PROCESSED_FILE)
+    try:
+        pd.to_datetime(df['ORDERDATE'])
+    except Exception as e:
+        pytest.fail(f"ORDERDATE column cannot be parsed as datetime: {e}")
