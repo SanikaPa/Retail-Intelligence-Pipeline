@@ -24,9 +24,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Run data cleaning
+        run: |
+          python scripts/data_cleaning.py
+
       - name: Run transformation
         run: |
           python scripts/transform.py
+
+      - name: Run curated summary generation
+        run: |
+          python scripts/curate.py
+
+      - name: Run report generation
+        run: |
+          python scripts/report.py
 
       - name: Run tests
         run: |

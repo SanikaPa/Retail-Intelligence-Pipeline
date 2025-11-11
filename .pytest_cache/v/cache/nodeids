@@ -1,0 +1,6 @@
+[
+  "scripts/tests/test_quality.py::test_file_exists",
+  "scripts/tests/test_quality.py::test_no_negative_sales",
+  "scripts/tests/test_quality.py::test_orderdate_parsable",
+  "scripts/tests/test_quality.py::test_required_columns"
+]
